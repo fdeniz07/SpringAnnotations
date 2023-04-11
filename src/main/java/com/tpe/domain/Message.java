@@ -2,6 +2,7 @@ package com.tpe.domain;
 
 public class Message {
 
+
     private String message;
 
     public String getMessage() {

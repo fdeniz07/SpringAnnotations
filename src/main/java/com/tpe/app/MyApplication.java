@@ -1,43 +1,37 @@
 package com.tpe.app;
 
+import com.tpe.AppConfiguration;
 import com.tpe.domain.Message;
 import com.tpe.service.MailService;
 import com.tpe.service.MessageService;
 import com.tpe.service.SmsService;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
 public class MyApplication {
     public static void main(String[] args) {
 
-        Message message = new Message();
-        message.setMessage("Siparişiniz kargoya verildi.");
+        Message message=new Message();
+        message.setMessage("Spring ile uygulama geliştirmek HARİKA:)");
 
-        //mesajı maille kullanıcıya gönder
-//        MailService mailService=new MailService();
-//        mailService.sendMessage(message);
-
-        //vazgeçtik, hala sms kullanan var:)
-//        SmsService smsService=new SmsService();
-//        smsService.sendMessage(message);
-
-        //bu böyle gitmez..interface çözüm olablir mi??
-//        MessageService service=new MailService();//veya diğeri
-//        service.sendMessage(message);
+        //config classını oku
+        AnnotationConfigApplicationContext context=new AnnotationConfigApplicationContext(AppConfiguration.class);
+        //config classındaki component scan ile tüm componentleri tarayacak
+        //her component tan bir tane bean oluştur, contexte hazırda bekletecek
 
 
-        //run timeda servisi belirlemek istersek
-        MessageService service = null;
-        String serviceName = "MailService";
+       // MessageService service=context.getBean(MailService.class);
+      //  MessageService service=context.getBean(MessageService.class);//Spring akıllı
+        //service.sendMessage(message);//newleme yapmadık
+                                     //spring container dan rica ettik, bize hazır getirdi. IoC
 
-        if (args.length > 0) {
-            serviceName = args[0];
-        }
-
-        if (serviceName.equalsIgnoreCase("MailService")) {
-            service = new MailService();
-        } else if (serviceName.equalsIgnoreCase("SmsService")) {
-            service = new SmsService();
-        }
+       // MessageService service=context.getBean(SmsService.class);
+        MessageService service=context.getBean("smsservice",MessageService.class);
         service.sendMessage(message);
+
+        //interface i implemente eden  birden fazla component ile işaretlenmiş class varsa
+        //hangisini alması gerektiğini belirtmemiz gerekir.
+
+        context.close();//contextten obje isteyemeyiz.
 
 
     }
