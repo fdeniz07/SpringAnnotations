@@ -4,69 +4,78 @@ import com.tpe.AppConfiguration;
 import com.tpe.domain.Message;
 import com.tpe.service.MailService;
 import com.tpe.service.MessageService;
+import com.tpe.service.SmsService;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
-
-import java.util.Random;
 
 public class MyApplication {
     public static void main(String[] args) {
 
-        Message message = new Message();
+        Message message=new Message();
         message.setMessage("Spring ile uygulama geliştirmek HARİKA:)");
 
         //config classını oku
-        AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(AppConfiguration.class);
+        AnnotationConfigApplicationContext context=new AnnotationConfigApplicationContext(AppConfiguration.class);
         //config classındaki component scan ile tüm componentleri tarayacak
         //her component tan bir tane bean oluştur, contexte hazırda bekletecek
-        //bean istedigimizde icerisindeki gerekli bagimliliklari enjekte ederek verir.
+        //bean istediğimizde içerisindeki gerekli bağımlılıkları enjekte ederek verir
 
-        // MessageService service=context.getBean(MailService.class);
-        //  MessageService service=context.getBean(MessageService.class);//Spring akıllı
+
+       // MessageService service=context.getBean(MailService.class);
+      //  MessageService service=context.getBean(MessageService.class);//Spring akıllı
         //service.sendMessage(message);//newleme yapmadık
-        //spring container dan rica ettik, bize hazır getirdi. IoC
+                                     //spring container dan rica ettik, bize hazır getirdi. IoC
 
-        // MessageService service=context.getBean(SmsService.class);
-//        MessageService service = context.getBean("smsservice", MessageService.class);
+       // MessageService service=context.getBean(SmsService.class);
+//        MessageService service=context.getBean("smsservice",MessageService.class);
 //        service.sendMessage(message);
 
         //interface i implemente eden  birden fazla component ile işaretlenmiş class varsa
         //hangisini alması gerektiğini belirtmemiz gerekir.
 
+//        MessageService service=context.getBean(MailService.class);//mailservice newlenmeden geldi.
+//        service.sendMessage(message);
+//        service.saveMessage(message);//dbrepoyu da newlemedik.
+//        //enjekte edilecek obje seçeneği birden fazla qualifier ile belirtilmeli
+//
+//        //Random random=new Random();-->Spring bizim için oluştursun.
+//        Random random=context.getBean(Random.class);
+//        System.out.println(random.nextInt(100));
 
-        MessageService service2 = context.getBean(MailService.class);
-        service2.sendMessage(message);
-        service2.saveMessage(message); //dbrepo'yu yenilemedik
-        //enjekte edilecek obje secenegi birden fazla ise @Qualifier("fileRepository") ile belirtilmelidir.
+        MessageService service1=context.getBean(MailService.class);
+        MessageService service2=context.getBean(MailService.class);
 
+        //spring te beanlerin default scope:singleton
+        //singleton:tüm uygulama için sadece tek bir bean oluşturulur, beanin tüm life cycleından Spring sorumludur.
+        //prototype:her obje istendiğinde yeni bir bean oluşturulur, beanin destroy/sonlandırılmasından sorumlu değildir.
 
-        //Random random = new Random(); --> Spring bizim icin olustursun
-        Random random = context.getBean(Random.class);
-        System.out.println(random.nextInt(100));
-
-
-
-        // Spring'de bean'lerin default scope: singleton dur.
-        //Singleton : Tüm uygulama icin sadece tek bir bean olusturulur.
-        //Prototype : her obje istendiginde yeni bir bean olusturulur.
-
-
-        MessageService service3 = context.getBean(MailService.class);
-        MessageService service4 = context.getBean(MailService.class);
-
-        if (service3 ==service4){
-            System.out.println("Ayni referansli objeler");
-            System.out.println(service3);
-            System.out.println(service4);
-        }else
-        {
-            System.out.println("Farkli referansli objeler");
-            System.out.println(service3);
-            System.out.println(service4);
+        if(service1==service2){
+            System.out.println("Aynı referanslı objeler");
+            System.out.println(service1);
+            System.out.println(service2);
+        }else{
+            System.out.println("Farklı referanslı objeler");
+            System.out.println(service1);
+            System.out.println(service2);
         }
 
+        SmsService service3=context.getBean(SmsService.class);
+        service3.sendMessage(message);
+        service3.printContact();//value ile uyg dışından değerleri aldık
+        service3.printProperties();
 
 
-        context.close();//contextten obje isteyemeyiz. Bean'ler sonlandirilir. getBean ile bean talep edemeyiz.
+
+        //tüm uygulamadaki beanlerin isimleri
+//        String[] beanNames=context.getBeanDefinitionNames();
+//        for (String name:beanNames) {
+//            System.out.println(name);
+//        }
+
+
+
+        context.close();//contextten obje isteyemeyiz,beanler sonlandırılır, getBean ile bean talep edemeyiz.
+
+        System.out.println("context in close metodun sonra");
 
 
     }
