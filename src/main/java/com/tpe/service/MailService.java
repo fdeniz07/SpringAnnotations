@@ -40,7 +40,7 @@ public class MailService implements MessageService {
 
     //constructor injection:daha güvenli,daha anlaşılır, test etmek daha kolay
     private Repo repo;
-    @Autowired
+    @Autowired //Class'in bir tane constructor'u varsa Autowired opsiyoneldir. Ancak kullanilmasi tavsiye edilir. DI islemi yapildigini belirtir.
     public MailService(@Qualifier("fileRepository") Repo repo) {
         this.repo = repo;
     }
